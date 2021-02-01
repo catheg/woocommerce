@@ -1,0 +1,22 @@
+function woocommerce_sale_flash_from_woo_discount_rules_v2($html, $post, $product){
+
+$discounted_price = apply_filters('advanced_woo_discount_rules_get_product_discount_price_from_custom_price', false, $product, 1, 0, 'all', true);
+$wooco_discounted_price = $product->get_sale_price();
+
+if($discounted_price !== false){
+	if($discounted_price['discounted_price']  > 0){ // woo discount rule
+	//var_dump( $discounted_price); die();
+			$max_percentage = ( (  $discounted_price['initial_price'] - $discounted_price['discounted_price'] ) / $discounted_price['initial_price'] ) * 100;
+			$html = '<span class="onsale">-' . round($max_percentage) . '%' . '</span>';
+		}
+	}
+	elseif ($wooco_discounted_price > 0) // woocommerce discount
+		{
+		$max_percentage = ( (  $product->get_regular_price()- $wooco_discounted_price  ) / $product->get_regular_price()) * 100;
+		$html = '<span class="onsale">-' . round($max_percentage) . '%' . '</span>';
+	}
+	
+	
+return $html;
+}
+add_filter( 'woocommerce_sale_flash', 'woocommerce_sale_flash_from_woo_discount_rules_v2', 101, 3);
